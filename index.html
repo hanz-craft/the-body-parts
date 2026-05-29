@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,7 +90,7 @@
         .btn-play { background: var(--success); color: white; border-color: #28A428; box-shadow: 0 10px 0px #28A428; font-size: 2.5rem; }
 
         /* -----------------------------------------
-           ADDED NAVIGATION BUTTONS (HOME & EXIT)
+           NAVIGATION BUTTONS (HOME & EXIT)
         ----------------------------------------- */
         .floating-nav-btn {
             position: absolute;
@@ -125,13 +124,13 @@
         .score-box { font-size: 2rem; font-weight: bold; padding: 10px 30px; border-radius: 30px; border: 4px solid white; transition: 0.3s; }
         .score-box.active-turn { transform: scale(1.15); box-shadow: 0 0 20px var(--accent); }
 
-        .split-container { display: flex; width: 100%; height: 100%; padding-top: 80px; padding-bottom: 100px; } /* Added bottom padding to avoid overlapping with new nav buttons */
+        .split-container { display: flex; width: 100%; height: 100%; padding-top: 80px; padding-bottom: 100px; } 
         .player-side { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: 0.3s; }
         .player-side.inactive { opacity: 0.4; pointer-events: none; filter: grayscale(50%); }
         
         .side-left { border-right: 4px dashed white; }
 
-        .question-box { font-size: 2.5rem; background: white; padding: 20px; border-radius: 30px; text-align: center; margin-bottom: 20px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); width: 90%; cursor: pointer;}
+        .question-box { font-size: 2.5rem; background: white; padding: 20px; border-radius: 30px; text-align: center; margin-bottom: 20px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); width: 90%; cursor: pointer; max-width: 500px;}
         .big-emoji { font-size: 6rem; margin: 10px; animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
@@ -169,7 +168,6 @@
 </head>
 <body>
 
-    <!-- MAGICAL BACKGROUND -->
     <div class="bg-layer" id="bg-layer">
         <div class="floating-obj sun">☀️</div>
         <div class="floating-obj rainbow">🌈</div>
@@ -183,21 +181,33 @@
         <div class="floating-obj sparkle" style="top: 60%; left: 70%; animation-delay: 1s;">✨</div>
     </div>
 
-    <!-- 1. SETUP SCREEN -->
-    <div id="setup-screen" class="screen active">
+    <div id="mode-screen" class="screen active">
         <h1>Welcome to the<br>Body Parts Game! 🌟</h1>
+        <div style="background: rgba(255,255,255,0.6); padding: 40px; border-radius: 30px; text-align: center;">
+            <h2>How do you want to play?</h2><br>
+            <button class="btn btn-p1" onclick="selectMode('alone')" style="font-size: 2.5rem; padding: 25px 50px;">👤 Play Alone</button><br>
+            <button class="btn btn-p2" onclick="selectMode('friends')" style="font-size: 2.5rem; padding: 25px 50px; margin-top: 20px;">👫 Play with Friends</button>
+        </div>
+    </div>
+
+    <div id="setup-screen" class="screen">
+        <h1>Get Ready! 🌟</h1>
         <div style="background: rgba(255,255,255,0.6); padding: 30px; border-radius: 30px; text-align: center;">
             <h2>Who is playing?</h2><br>
             <input type="text" id="p1-name" class="name-input" value="Player 1" style="background: var(--p1-color); color: white;">
-            <input type="text" id="p2-name" class="name-input" value="Player 2" style="background: var(--p2-color); color: white;">
+            
+            <span id="p2-input-container">
+                <input type="text" id="p2-name" class="name-input" value="Player 2" style="background: var(--p2-color); color: white;">
+            </span>
             <br>
             <h2>Choose Mini Game!</h2><br>
             <button class="btn btn-p1" onclick="startGame('quiz')">🤔 Quiz Game</button>
             <button class="btn btn-p2" onclick="startGame('scramble')">🔠 Scramble Game</button>
         </div>
+        
+        <button class="floating-nav-btn btn-home" onclick="navGoHome()">🏠 Home</button>
     </div>
 
-    <!-- 2. GAME SCREEN (SPLIT) -->
     <div id="game-screen" class="screen">
         <div class="top-scoreboard">
             <div id="score-box-1" class="score-box" style="background: var(--p1-color); color: white;">
@@ -212,47 +222,40 @@
         </div>
 
         <div class="split-container">
-            <!-- Left Side (Player 1) -->
             <div class="player-side side-left" id="side-1">
                 <div class="question-box" onclick="readQuestion(1)" id="q-box-1">
                     <div id="q-text-1">Where is the nose?</div>
                     <div class="big-emoji" id="q-emoji-1">👤</div>
                     <div style="font-size: 1rem; color: #888;">🔊 Tap to Listen</div>
                 </div>
-                <div id="game-area-1"></div> <!-- Buttons injected here -->
-            </div>
+                <div id="game-area-1"></div> </div>
 
-            <!-- Right Side (Player 2) -->
             <div class="player-side" id="side-2">
                 <div class="question-box" onclick="readQuestion(2)" id="q-box-2">
                     <div id="q-text-2">Where is the nose?</div>
                     <div class="big-emoji" id="q-emoji-2">👤</div>
                     <div style="font-size: 1rem; color: #888;">🔊 Tap to Listen</div>
                 </div>
-                <div id="game-area-2"></div> <!-- Buttons injected here -->
-            </div>
+                <div id="game-area-2"></div> </div>
         </div>
 
-        <!-- NEW NAVIGATION BUTTONS -->
         <button class="floating-nav-btn btn-home" onclick="navGoHome()">🏠 Home</button>
         <button class="floating-nav-btn btn-exit" onclick="navExitGame()">🔙 Back</button>
     </div>
 
-    <!-- 3. END SCREEN -->
     <div id="end-screen" class="screen">
         <h1>Great Job! 🎉</h1>
         <h2 id="winner-text" style="font-size: 3rem;">Everyone Wins!</h2>
-        <div style="display: flex; gap: 20px; margin: 20px;">
+        <div style="display: flex; gap: 20px; margin: 20px; flex-wrap: wrap; justify-content: center;">
             <div class="score-box" style="background: var(--p1-color); color: white; padding: 20px 40px; font-size: 2.5rem;">
                 <span id="final-p1-name">P1</span><br>⭐ <span id="final-p1-score">0</span>
             </div>
-            <div class="score-box" style="background: var(--p2-color); color: white; padding: 20px 40px; font-size: 2.5rem;">
+            <div id="final-p2-box" class="score-box" style="background: var(--p2-color); color: white; padding: 20px 40px; font-size: 2.5rem;">
                 <span id="final-p2-name">P2</span><br>⭐ <span id="final-p2-score">0</span>
             </div>
         </div>
-        <button class="btn btn-play" onclick="location.reload()">Play Again! 🚀</button>
+        <button class="btn btn-play" onclick="navGoHome()">Play Again! 🚀</button>
         
-        <!-- NEW NAVIGATION BUTTON (HOME ONLY ON END SCREEN) -->
         <button class="floating-nav-btn btn-home" style="bottom: 30px; left: calc(50% - 70px);" onclick="navGoHome()">🏠 Home</button>
     </div>
 
@@ -262,56 +265,29 @@
         ========================================================= */
         
         // --- DATA ---
-         const quizData = [
-
-            { q: "What is it?", answer: "nose", emoji: "👃", opts: ["eyes", "ears", "nose", "mouth"] },
-
-            { q: "What body part do we use to see?", answer: "eyes", emoji: "👀", opts: ["hands", "eyes", "feet", "head"] },
-
-            { q: "Can you name it?", answer: "hand", emoji: "🖐️", opts: ["foot", "hand", "knee", "ear"] },
-
-            { q: "Touch the ears!", answer: "ears", emoji: "👂", opts: ["ears", "nose", "teeth", "tongue"] },
-
-            { q: "Which one is the mouth?", answer: "mouth", emoji: "👄", opts: ["mouth", "eye", "neck", "leg"] },
-
-            { q: "What body part do we use to walk?", answer: "feet", emoji: "🦶", opts: ["arms", "head", "feet", "shoulders"] },
-
-            { q: "Find the teeth!", answer: "teeth", emoji: "🦷", opts: ["tongue", "teeth", "lips", "head"] },
-
-            { q: "What is it?", answer: "leg", emoji: "🦵", opts: ["arm", "leg", "finger", "toe"] },
-
-            { q: "Can you name it?", answer: "tongue", emoji: "👅", opts: ["teeth", "tongue", "cheek", "chin"] },
-
-            { q: "Where is the arm?", answer: "arm", emoji: "💪", opts: ["leg", "foot", "arm", "hand"] }
-
+        const quizData = [
+            { q: "What is it?", answer: "Nose", emoji: "👃", opts: ["Eyes", "Ears", "Nose", "Mouth"] },
+            { q: "What body part do we use to see?", answer: "Eyes", emoji: "👀", opts: ["Hands", "Eyes", "Feet", "Hair"] },
+            { q: "Can you name it?", answer: "Hand", emoji: "🖐️", opts: ["Foot", "Hand", "Knee", "Ear"] },
+            { q: "Touch the ears!", answer: "Ears", emoji: "👂", opts: ["Ears", "Nose", "Teeth", "Tongue"] },
+            { q: "Which one is the mouth?", answer: "Mouth", emoji: "👄", opts: ["Mouth", "Eye", "Neck", "Leg"] },
+            { q: "What body part do we use to walk?", answer: "Feet", emoji: "🦶", opts: ["Arms", "Head", "Feet", "Shoulders"] },
+            { q: "Find the teeth!", answer: "Teeth", emoji: "🦷", opts: ["Tongue", "Teeth", "Lips", "Hair"] },
+            { q: "What is it?", answer: "Leg", emoji: "🦵", opts: ["Arm", "Leg", "Finger", "Toe"] },
+            { q: "Can you name it?", answer: "Tongue", emoji: "👅", opts: ["Teeth", "Tongue", "Cheek", "Chin"] },
+            { q: "Where is the arm?", answer: "Arm", emoji: "💪", opts: ["Leg", "Foot", "Arm", "Hand"] }
         ];
 
-
-
         const scrambleWords = [
-
             { word: "NOSE", emoji: "👃" }, { word: "EYES", emoji: "👀" },
-
             { word: "HAND", emoji: "🖐️" }, { word: "FOOT", emoji: "🦶" },
-
             { word: "EARS", emoji: "👂" }, { word: "LEGS", emoji: "🦵" },
-
-            { word: "ARMS", emoji: "💪" }, { word: "HEAD", emoji: "💆🏻‍♂️" },
-
+            { word: "ARMS", emoji: "💪" }, { word: "HAIR", emoji: "👤" },
             { word: "LIPS", emoji: "👄" }, { word: "KNEE", emoji: "🦵" }
         ];
 
         // --- STATE VARIABLES ---
         let isSinglePlayer = false;
-        let gameMode = "";
-        let p1 = { name: "Player 1", score: 0 };
-        let p2 = { name: "Player 2", score: 0 };
-        let currentRound = 1;
-        const MAX_ROUNDS = 10;
-        let activePlayer = 1; 
-        let currentQuestionData = null;
-        let isWaiting = false;
-        
         let gameMode = "";
         let p1 = { name: "Player 1", score: 0 };
         let p2 = { name: "Player 2", score: 0 };
@@ -378,18 +354,29 @@
             document.getElementById('round-display').innerText = 1;
         }
 
+        function selectMode(mode) {
+            playSound('pop');
+            isSinglePlayer = (mode === 'alone');
+            
+            // Hide or show player 2 input
+            document.getElementById('p2-input-container').style.display = isSinglePlayer ? 'none' : 'inline-block';
+            
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('setup-screen').classList.add('active');
+        }
+
         function navGoHome() {
             playSound('pop');
             resetGameState();
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('setup-screen').classList.add('active');
+            document.getElementById('mode-screen').classList.add('active');
         }
 
         function navExitGame() {
             playSound('pop');
             resetGameState();
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('setup-screen').classList.add('active');
+            document.getElementById('mode-screen').classList.add('active');
         }
 
         // --- GAME FLOW ---
@@ -401,12 +388,18 @@
             
             document.getElementById('p1-display').innerText = p1.name;
             document.getElementById('p2-display').innerText = p2.name;
+
+            // Apply Single Player or Split Screen layout adjustments
+            document.getElementById('score-box-2').style.display = isSinglePlayer ? 'none' : 'block';
+            document.getElementById('side-2').style.display = isSinglePlayer ? 'none' : 'flex';
+            document.getElementById('side-1').style.borderRight = isSinglePlayer ? 'none' : '4px dashed white';
+            document.getElementById('final-p2-box').style.display = isSinglePlayer ? 'none' : 'block';
             
             // Randomize questions
             quizData.sort(() => 0.5 - Math.random());
             scrambleWords.sort(() => 0.5 - Math.random());
 
-            document.getElementById('setup-screen').classList.remove('active');
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('game-screen').classList.add('active');
             
             startRound();
@@ -420,11 +413,17 @@
             isWaiting = false;
             document.getElementById('round-display').innerText = currentRound;
             
-            // Update Active Side Visuals
-            document.getElementById('side-1').classList.toggle('inactive', activePlayer !== 1);
-            document.getElementById('side-2').classList.toggle('inactive', activePlayer !== 2);
-            document.getElementById('score-box-1').classList.toggle('active-turn', activePlayer === 1);
-            document.getElementById('score-box-2').classList.toggle('active-turn', activePlayer === 2);
+            if (isSinglePlayer) {
+                activePlayer = 1;
+                document.getElementById('side-1').classList.remove('inactive');
+                document.getElementById('score-box-1').classList.add('active-turn');
+            } else {
+                // Update Active Side Visuals for 2-player
+                document.getElementById('side-1').classList.toggle('inactive', activePlayer !== 1);
+                document.getElementById('side-2').classList.toggle('inactive', activePlayer !== 2);
+                document.getElementById('score-box-1').classList.toggle('active-turn', activePlayer === 1);
+                document.getElementById('score-box-2').classList.toggle('active-turn', activePlayer === 2);
+            }
 
             // Fetch Data
             if (gameMode === 'quiz') {
@@ -437,9 +436,12 @@
 
             // Auto-read for current player
             setTimeout(() => {
-                const intro = `${activePlayer === 1 ? p1.name : p2.name}'s turn!`;
-                speak(intro);
-                setTimeout(() => speak(currentQuestionData.q || "Spell " + currentQuestionData.word), 1500);
+                let intro = "";
+                if (!isSinglePlayer) {
+                    intro = `${activePlayer === 1 ? p1.name : p2.name}'s turn!`;
+                    speak(intro);
+                }
+                setTimeout(() => speak(currentQuestionData.q || "Spell " + currentQuestionData.word), isSinglePlayer ? 500 : 1500);
             }, 500);
         }
 
@@ -469,7 +471,9 @@
             
             setTimeout(() => {
                 currentRound++;
-                activePlayer = activePlayer === 1 ? 2 : 1;
+                if (!isSinglePlayer) {
+                    activePlayer = activePlayer === 1 ? 2 : 1;
+                }
                 startRound();
             }, 2000);
         }
@@ -485,14 +489,21 @@
             document.getElementById('end-screen').classList.add('active');
             
             document.getElementById('final-p1-name').innerText = p1.name;
-            document.getElementById('final-p2-name').innerText = p2.name;
             document.getElementById('final-p1-score').innerText = p1.score;
-            document.getElementById('final-p2-score').innerText = p2.score;
+            
+            if (!isSinglePlayer) {
+                document.getElementById('final-p2-name').innerText = p2.name;
+                document.getElementById('final-p2-score').innerText = p2.score;
+            }
 
             const winText = document.getElementById('winner-text');
-            if (p1.score > p2.score) winText.innerText = `${p1.name} Wins! 🏆`;
-            else if (p2.score > p1.score) winText.innerText = `${p2.name} Wins! 🏆`;
-            else winText.innerText = "It's a Tie! 🤝 You are both stars!";
+            if (isSinglePlayer) {
+                winText.innerText = `Great Job! 🏆`;
+            } else {
+                if (p1.score > p2.score) winText.innerText = `${p1.name} Wins! 🏆`;
+                else if (p2.score > p1.score) winText.innerText = `${p2.name} Wins! 🏆`;
+                else winText.innerText = "It's a Tie! 🤝 You are both stars!";
+            }
 
             speak(winText.innerText);
             fireConfetti();
@@ -502,9 +513,13 @@
         function buildQuizUI(player, data) {
             document.getElementById(`q-text-${player}`).innerText = data.q;
             document.getElementById(`q-emoji-${player}`).innerText = data.emoji;
-            document.getElementById(`q-text-${player === 1 ? 2 : 1}`).innerText = "Wait your turn...";
-            document.getElementById(`q-emoji-${player === 1 ? 2 : 1}`).innerText = "⏳";
-            document.getElementById(`game-area-${player === 1 ? 2 : 1}`).innerHTML = "";
+            
+            if (!isSinglePlayer) {
+                const otherPlayer = player === 1 ? 2 : 1;
+                document.getElementById(`q-text-${otherPlayer}`).innerText = "Wait your turn...";
+                document.getElementById(`q-emoji-${otherPlayer}`).innerText = "⏳";
+                document.getElementById(`game-area-${otherPlayer}`).innerHTML = "";
+            }
 
             const area = document.getElementById(`game-area-${player}`);
             area.innerHTML = "";
@@ -535,9 +550,13 @@
         function buildScrambleUI(player, data) {
             document.getElementById(`q-text-${player}`).innerText = "Spell the word!";
             document.getElementById(`q-emoji-${player}`).innerText = data.emoji;
-            document.getElementById(`q-text-${player === 1 ? 2 : 1}`).innerText = "Wait your turn...";
-            document.getElementById(`q-emoji-${player === 1 ? 2 : 1}`).innerText = "⏳";
-            document.getElementById(`game-area-${player === 1 ? 2 : 1}`).innerHTML = "";
+            
+            if (!isSinglePlayer) {
+                const otherPlayer = player === 1 ? 2 : 1;
+                document.getElementById(`q-text-${otherPlayer}`).innerText = "Wait your turn...";
+                document.getElementById(`q-emoji-${otherPlayer}`).innerText = "⏳";
+                document.getElementById(`game-area-${otherPlayer}`).innerHTML = "";
+            }
 
             currentSpelledWord = "";
             const word = data.word;
