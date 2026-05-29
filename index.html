@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Magical Body Parts Game! 🎈</title>
+    <title>Magical Body Parts Game! 🎈</title>
     <style>
         /* =========================================================
            MAGICAL KINDERGARTEN CSS STYLING
@@ -90,6 +90,30 @@
         .btn-play { background: var(--success); color: white; border-color: #28A428; box-shadow: 0 10px 0px #28A428; font-size: 2.5rem; }
 
         /* -----------------------------------------
+           ADDED NAVIGATION BUTTONS (HOME & EXIT)
+        ----------------------------------------- */
+        .floating-nav-btn {
+            position: absolute;
+            bottom: 30px;
+            font-family: inherit;
+            font-size: 1.8rem;
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 4px solid var(--white);
+            cursor: pointer;
+            box-shadow: 0 8px 0px rgba(0,0,0,0.2);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: white;
+            font-weight: bold;
+            z-index: 50;
+        }
+        .floating-nav-btn:hover { transform: translateY(-8px) scale(1.05); box-shadow: 0 15px 0px rgba(0,0,0,0.2); }
+        .floating-nav-btn:active { transform: translateY(5px); box-shadow: 0 3px 0px rgba(0,0,0,0.2); }
+        
+        .btn-home { left: 30px; background: #FF90B3; } /* Pink */
+        .btn-exit { right: 30px; background: #FFB703; } /* Orange/Yellow */
+
+        /* -----------------------------------------
            SPLIT SCREEN GAMEPLAY
         ----------------------------------------- */
         .top-scoreboard {
@@ -100,7 +124,7 @@
         .score-box { font-size: 2rem; font-weight: bold; padding: 10px 30px; border-radius: 30px; border: 4px solid white; transition: 0.3s; }
         .score-box.active-turn { transform: scale(1.15); box-shadow: 0 0 20px var(--accent); }
 
-        .split-container { display: flex; width: 100%; height: 100%; padding-top: 80px; }
+        .split-container { display: flex; width: 100%; height: 100%; padding-top: 80px; padding-bottom: 100px; } /* Added bottom padding to avoid overlapping with new nav buttons */
         .player-side { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: 0.3s; }
         .player-side.inactive { opacity: 0.4; pointer-events: none; filter: grayscale(50%); }
         
@@ -131,16 +155,20 @@
 
         /* Mobile tweaks */
         @media (max-width: 768px) {
-            .split-container { flex-direction: column; }
+            .split-container { flex-direction: column; padding-bottom: 80px; }
             .side-left { border-right: none; border-bottom: 4px dashed white; }
             .question-box { font-size: 1.8rem; padding: 10px; }
             h1 { font-size: 2.5rem; }
             .top-scoreboard { position: relative; }
+            .floating-nav-btn { font-size: 1.3rem; padding: 10px 20px; bottom: 15px; }
+            .btn-home { left: 15px; }
+            .btn-exit { right: 15px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- MAGICAL BACKGROUND -->
     <div class="bg-layer" id="bg-layer">
         <div class="floating-obj sun">☀️</div>
         <div class="floating-obj rainbow">🌈</div>
@@ -154,6 +182,7 @@
         <div class="floating-obj sparkle" style="top: 60%; left: 70%; animation-delay: 1s;">✨</div>
     </div>
 
+    <!-- 1. SETUP SCREEN -->
     <div id="setup-screen" class="screen active">
         <h1>Welcome to the<br>Body Parts Game! 🌟</h1>
         <div style="background: rgba(255,255,255,0.6); padding: 30px; border-radius: 30px; text-align: center;">
@@ -167,6 +196,7 @@
         </div>
     </div>
 
+    <!-- 2. GAME SCREEN (SPLIT) -->
     <div id="game-screen" class="screen">
         <div class="top-scoreboard">
             <div id="score-box-1" class="score-box" style="background: var(--p1-color); color: white;">
@@ -181,24 +211,33 @@
         </div>
 
         <div class="split-container">
+            <!-- Left Side (Player 1) -->
             <div class="player-side side-left" id="side-1">
                 <div class="question-box" onclick="readQuestion(1)" id="q-box-1">
                     <div id="q-text-1">Where is the nose?</div>
                     <div class="big-emoji" id="q-emoji-1">👤</div>
                     <div style="font-size: 1rem; color: #888;">🔊 Tap to Listen</div>
                 </div>
-                <div id="game-area-1"></div> </div>
+                <div id="game-area-1"></div> <!-- Buttons injected here -->
+            </div>
 
+            <!-- Right Side (Player 2) -->
             <div class="player-side" id="side-2">
                 <div class="question-box" onclick="readQuestion(2)" id="q-box-2">
                     <div id="q-text-2">Where is the nose?</div>
                     <div class="big-emoji" id="q-emoji-2">👤</div>
                     <div style="font-size: 1rem; color: #888;">🔊 Tap to Listen</div>
                 </div>
-                <div id="game-area-2"></div> </div>
+                <div id="game-area-2"></div> <!-- Buttons injected here -->
+            </div>
         </div>
+
+        <!-- NEW NAVIGATION BUTTONS -->
+        <button class="floating-nav-btn btn-home" onclick="navGoHome()">🏠 Home</button>
+        <button class="floating-nav-btn btn-exit" onclick="navExitGame()">🔙 Back</button>
     </div>
 
+    <!-- 3. END SCREEN -->
     <div id="end-screen" class="screen">
         <h1>Great Job! 🎉</h1>
         <h2 id="winner-text" style="font-size: 3rem;">Everyone Wins!</h2>
@@ -211,6 +250,9 @@
             </div>
         </div>
         <button class="btn btn-play" onclick="location.reload()">Play Again! 🚀</button>
+        
+        <!-- NEW NAVIGATION BUTTON (HOME ONLY ON END SCREEN) -->
+        <button class="floating-nav-btn btn-home" style="bottom: 30px; left: calc(50% - 70px);" onclick="navGoHome()">🏠 Home</button>
     </div>
 
     <script>
@@ -221,7 +263,7 @@
         // --- DATA ---
         const quizData = [
             { q: "What is it?", answer: "nose", emoji: "👃", opts: ["eyes", "ears", "nose", "mouth"] },
-            { q: "What body part do we use to see?", answer: "eyes", emoji: "👀", opts: ["hands", "eyes", "feet", "hair"] },
+            { q: "What body part do we use to see?", answer: "eyes", emoji: "👀", opts: ["hands", "eyes", "feet", "head"] },
             { q: "Can you name it?", answer: "hand", emoji: "🖐️", opts: ["foot", "hand", "knee", "ear"] },
             { q: "Touch the ears!", answer: "ears", emoji: "👂", opts: ["ears", "nose", "teeth", "tongue"] },
             { q: "Which one is the mouth?", answer: "mouth", emoji: "👄", opts: ["mouth", "eye", "neck", "leg"] },
@@ -236,7 +278,7 @@
             { word: "NOSE", emoji: "👃" }, { word: "EYES", emoji: "👀" },
             { word: "HAND", emoji: "🖐️" }, { word: "FOOT", emoji: "🦶" },
             { word: "EARS", emoji: "👂" }, { word: "LEGS", emoji: "🦵" },
-            { word: "ARMS", emoji: "💪" }, { word: "HEAD", emoji: "💆🏻‍♂️" },
+            { word: "ARMS", emoji: "💪" }, { word: "HAIR", emoji: "👤" },
             { word: "LIPS", emoji: "👄" }, { word: "KNEE", emoji: "🦵" }
         ];
 
@@ -297,6 +339,28 @@
                 playSound('pop');
                 speak(currentQuestionData.q || currentQuestionData.word);
             }
+        }
+
+        // --- NAVIGATION LOGIC ---
+        function resetGameState() {
+            p1.score = 0; p2.score = 0; currentRound = 1; activePlayer = 1; isWaiting = false;
+            document.getElementById('p1-score').innerText = 0;
+            document.getElementById('p2-score').innerText = 0;
+            document.getElementById('round-display').innerText = 1;
+        }
+
+        function navGoHome() {
+            playSound('pop');
+            resetGameState();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('setup-screen').classList.add('active');
+        }
+
+        function navExitGame() {
+            playSound('pop');
+            resetGameState();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('setup-screen').classList.add('active');
         }
 
         // --- GAME FLOW ---
